@@ -16,12 +16,50 @@ const PRO_ONLY_PREFIXES = ['/auctions']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+
+  // Vercel Edge must have these at build/runtime; undefined → createServerClient throws
+  // and surfaces as MIDDLEWARE_INVOCATION_FAILED.
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error(
+      '[middleware] Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    )
+    if (PUBLIC_ROUTES.has(pathname)) {
+      return NextResponse.next()
+    }
+    return new NextResponse(
+      'Server misconfiguration: add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel → Settings → Environment Variables, then redeploy.',
+      { status: 500 },
+    )
+  }
+
+  try {
+    return await runMiddleware(request, pathname, supabaseUrl, supabaseAnonKey)
+  } catch (err) {
+    console.error('[middleware] Uncaught error:', err)
+    if (PUBLIC_ROUTES.has(pathname)) {
+      return NextResponse.next()
+    }
+    return new NextResponse('Temporary error in middleware. Please refresh.', {
+      status: 500,
+    })
+  }
+}
+
+async function runMiddleware(
+  request: NextRequest,
+  pathname: string,
+  supabaseUrl: string,
+  supabaseAnonKey: string,
+) {
   let response = NextResponse.next({ request })
 
   // ── 1. Refresh the Supabase session (required by @supabase/ssr) ──────────
   const supabase = createServerClient<Database, 'public'>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
