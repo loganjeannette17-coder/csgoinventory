@@ -1,11 +1,8 @@
 import { formatChartAxisDate } from '@/lib/utils'
+import type { SnapshotPoint } from '@/lib/personal-value-chart'
 
 export type { TimePoint } from '@/lib/chart-time'
-
-export type SnapshotPoint = {
-  total_value_usd: number
-  captured_at: string
-}
+export type { SnapshotPoint }
 
 /** Evenly sample up to `maxPoints` points for smooth charts while keeping time alignment. */
 export function downsampleSnapshotSeries(
@@ -41,4 +38,3 @@ export function buildFourChartLabels(dates: string[]): [string, string, string, 
     string,
   ]
 }
-

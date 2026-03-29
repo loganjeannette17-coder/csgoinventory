@@ -1,3 +1,5 @@
+'use client'
+
 import type { ReactNode } from 'react'
 import { formatUsd } from '@/lib/utils'
 import { buildFourTimeDomainLabels, downsampleTimePoints, type TimePoint } from '@/lib/chart-time'
