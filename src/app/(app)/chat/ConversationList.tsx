@@ -32,7 +32,7 @@ interface Props {
 
 export function ConversationList({ conversations: initial, currentUserId }: Props) {
   const params = useParams<{ conversationId?: string }>()
-  const activeId = params.conversationId
+  const activeId = params?.conversationId
 
   const [conversations, setConversations] = useState(initial)
   const onlineIds = usePresence(currentUserId)

@@ -1,17 +1,18 @@
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { getOrCreateStripeCustomer, getStripe } from '@/lib/stripe'
-import { getPlanFromPriceId, getUserPlanInfo } from '@/lib/plan'
+import { getPlanFromPriceId, getUserPlanInfoWithClient } from '@/lib/plan'
 import type { Plan } from '@/lib/plan'
+import type { AppSupabaseClient } from '@/types/supabase-app-client'
 import { NextResponse } from 'next/server'
 
 /**
- * Isolated from route.ts so Next.js does not load Stripe/Supabase/plan while
- * analyzing the route during "Collecting page data" (avoids Vercel build failures).
+ * Shared checkout logic. `supabase` must be the caller's session (App Router or Pages API).
  */
-export async function handleCheckoutPost(request: Request) {
+export async function handleStripeCheckoutPost(
+  request: Request,
+  supabase: AppSupabaseClient,
+): Promise<Response> {
   try {
-    // ── 1. Authenticate the caller ───────────────────────────────────────────
-    const supabase = await createClient()
     const {
       data: { user },
       error: authError,
@@ -28,7 +29,6 @@ export async function handleCheckoutPost(request: Request) {
       )
     }
 
-    // ── 1b. Parse optional body — body is not required for backward compat ───
     let requestedPlan: Plan = 'pro'
     try {
       const body = await request.json()
@@ -37,22 +37,18 @@ export async function handleCheckoutPost(request: Request) {
       // No body or non-JSON body — default to 'pro' (existing behavior)
     }
 
-    // ── 2. Guard: already on this plan (or better) ───────────────────────────
-    // Allow basic users to upgrade to pro; block everything else.
-    const { isPremium, plan: currentPlan } = await getUserPlanInfo(user.id)
+    const { isPremium, plan: currentPlan } = await getUserPlanInfoWithClient(supabase, user.id)
 
     if (isPremium) {
-      // Block if the user already has the requested plan or a higher one
       const alreadyCovered =
-        currentPlan === 'pro' || // pro covers everything
-        (currentPlan === 'basic' && requestedPlan === 'basic') // basic requesting basic again
+        currentPlan === 'pro' ||
+        (currentPlan === 'basic' && requestedPlan === 'basic')
       if (alreadyCovered) {
         return NextResponse.json(
           { error: 'You already have an active subscription.' },
           { status: 409 },
         )
       }
-      // Fall through: basic user upgrading to pro
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim()
@@ -63,16 +59,12 @@ export async function handleCheckoutPost(request: Request) {
       )
     }
 
-    // ── 3. Get or create a Stripe customer ───────────────────────────────────
     const customerId = await getOrCreateStripeCustomer(user.id, user.email)
 
-    // ── 4. Resolve the correct Stripe price for the requested plan ───────────
     const basicPriceId = process.env.STRIPE_BASIC_PRICE_ID?.trim()
     const proPriceId = process.env.STRIPE_SUBSCRIPTION_PRICE_ID?.trim()
     const legacyPriceId = process.env.STRIPE_PRICE_ID?.trim()
 
-    // Helpful guardrails: Stripe *Price IDs* start with `price_`.
-    // Product IDs start with `prod_` and will break Checkout when used as `price`.
     if (basicPriceId?.startsWith('prod_')) {
       return NextResponse.json(
         {
@@ -111,7 +103,6 @@ export async function handleCheckoutPost(request: Request) {
       )
     }
 
-    // Subscription mode when at least one subscription price ID exists.
     const isSubscription = !!(basicPriceId || proPriceId)
 
     const resolvedPriceId: string | undefined =
@@ -131,13 +122,8 @@ export async function handleCheckoutPost(request: Request) {
 
     const resolvedPlan: Plan = isSubscription
       ? getPlanFromPriceId(resolvedPriceId)
-      : 'pro' // one-time purchase is always treated as pro (legacy)
+      : 'pro'
 
-    // ── 5. Upsert the customer ID into our database ──────────────────────────
-    // This route runs in response to a user click, but inserting/upserting into
-    // `subscriptions` is protected by RLS. Use the service-role client for the
-    // trusted server-side write (while still only writing `user.id` we derived
-    // from the authenticated caller).
     const serviceSupabase = await createServiceClient()
     const { error: upsertError } = await serviceSupabase.from('subscriptions').upsert(
       {
@@ -146,9 +132,6 @@ export async function handleCheckoutPost(request: Request) {
         status: 'incomplete',
         plan: resolvedPlan,
       },
-      // Conflict target must be backed by a UNIQUE constraint / unique index.
-      // Your schema creates a unique index on `stripe_customer_id` (see 001_stripe_helpers.sql),
-      // so we upsert based on that.
       { onConflict: 'stripe_customer_id' },
     )
 
@@ -160,7 +143,6 @@ export async function handleCheckoutPost(request: Request) {
       )
     }
 
-    // ── 6. Create the Stripe Checkout Session ────────────────────────────────
     const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       mode: isSubscription ? 'subscription' : 'payment',
@@ -178,7 +160,6 @@ export async function handleCheckoutPost(request: Request) {
         },
       }),
 
-      // `{CHECKOUT_SESSION_ID}` lets the app sync premium without waiting for webhooks.
       success_url: `${appUrl}/dashboard?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/upgrade?payment=canceled`,
 

@@ -20,8 +20,8 @@ const PRO_EXTRA_FEATURES = [
 export default function UpgradePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const wasCanceled  = searchParams.get('payment') === 'canceled'
-  const highlightPro = searchParams.get('plan') === 'pro'
+  const wasCanceled  = searchParams?.get('payment') === 'canceled'
+  const highlightPro = searchParams?.get('plan') === 'pro'
 
   const [loadingPlan, setLoadingPlan] = useState<'basic' | 'pro' | null>(null)
   const [error, setError]             = useState<string | null>(null)

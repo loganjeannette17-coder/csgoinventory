@@ -15,8 +15,8 @@ const OAUTH_PROVIDERS: { id: OAuthProvider; label: string }[] = [
 function LoginPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const next = searchParams.get('next') ?? '/dashboard'
-  const urlError = searchParams.get('error')
+  const next = searchParams?.get('next') ?? '/dashboard'
+  const urlError = searchParams?.get('error') ?? null
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

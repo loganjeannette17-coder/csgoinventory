@@ -20,7 +20,7 @@ const NAV_LINKS = [
 ]
 
 export function Navbar({ username, displayName, avatarUrl, unreadCount }: NavbarProps) {
-  const pathname  = usePathname()
+  const pathname  = usePathname() ?? ''
   const router    = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)

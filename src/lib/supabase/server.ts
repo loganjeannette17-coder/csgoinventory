@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import type { Database } from '@/types/database'
 import type { AppSupabaseClient } from '@/types/supabase-app-client'
 
-function readEnvVar(name: string): string {
+export function readEnvVar(name: string): string {
   const raw = process.env[name]
   if (!raw?.trim()) {
     throw new Error(`${name} is not set`)

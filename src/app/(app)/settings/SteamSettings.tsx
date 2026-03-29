@@ -29,8 +29,8 @@ interface SyncErrorResponse {
 export default function SteamSettings({ initialAccount }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const steamLinked = searchParams.get('steam_linked') === '1'
-  const steamError = searchParams.get('steam_error')
+  const steamLinked = searchParams?.get('steam_linked') === '1'
+  const steamError = searchParams?.get('steam_error')
 
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null)

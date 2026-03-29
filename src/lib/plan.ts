@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import type { AppSupabaseClient } from '@/types/supabase-app-client'
 
 export type Plan = 'basic' | 'pro'
 
@@ -17,9 +18,10 @@ export interface PlanInfo {
  * Callers that already need a supabase client should call createClient() themselves
  * and inline the query — this helper is for routes that only need the plan check.
  */
-export async function getUserPlanInfo(userId: string): Promise<PlanInfo> {
-  const supabase = await createClient()
-
+export async function getUserPlanInfoWithClient(
+  supabase: AppSupabaseClient,
+  userId: string,
+): Promise<PlanInfo> {
   const { data } = await supabase
     .from('profiles')
     .select('is_premium, subscriptions(plan)')
@@ -36,6 +38,11 @@ export async function getUserPlanInfo(userId: string): Promise<PlanInfo> {
     isPremium: data.is_premium ?? false,
     plan:      (sub?.plan as Plan | null) ?? null,
   }
+}
+
+export async function getUserPlanInfo(userId: string): Promise<PlanInfo> {
+  const supabase = await createClient()
+  return getUserPlanInfoWithClient(supabase, userId)
 }
 
 /**

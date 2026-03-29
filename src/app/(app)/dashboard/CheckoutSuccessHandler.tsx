@@ -9,8 +9,8 @@ function Inner() {
   const [message, setMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    if (searchParams.get('payment') !== 'success') return
-    const sessionId = searchParams.get('session_id')
+    if (searchParams?.get('payment') !== 'success') return
+    const sessionId = searchParams?.get('session_id')
     if (!sessionId) {
       setMessage('Payment succeeded — activating your plan… If nothing changes, keep Stripe CLI running (`stripe listen`) or check webhooks.')
       return
