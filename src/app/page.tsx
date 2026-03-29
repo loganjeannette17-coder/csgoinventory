@@ -1,58 +1,6 @@
 import Link from 'next/link'
 import { PreviewValueChart } from '@/components/landing/PreviewValueChart'
-
-const PREVIEW_OFFERS = [
-  {
-    title: 'Live market pricing',
-    description:
-      'See total inventory value in USD with updates as market prices move—like a stock portfolio for your skins.',
-  },
-  {
-    title: 'Value history',
-    description:
-      'Spot trends over days and weeks so you know when your collection is up or down before you list or trade.',
-  },
-  {
-    title: 'Steam inventory sync',
-    description:
-      'Connect Steam once; we pull CS2 items and keep counts and prices aligned with your inventory.',
-  },
-  {
-    title: 'Marketplace & profile',
-    description:
-      'List items at fixed prices, browse public inventories, and share a trader profile with the community.',
-  },
-  {
-    title: 'Messages',
-    description: 'DM other users to negotiate and coordinate trades without leaving the app.',
-  },
-  {
-    title: 'Auctions (Pro)',
-    description:
-      'Timed auctions, bids, and buy-now—when you upgrade to Pro for more advanced selling.',
-  },
-] as const
-
-const FEATURES = [
-  {
-    title: 'Steam inventory sync',
-    description:
-      'Connect your Steam account and pull your CS2 items with market prices so your collection stays current.',
-  },
-  {
-    title: 'List & browse',
-    description:
-      'Showcase inventory publicly or privately, discover other traders, and list skins at fixed prices.',
-  },
-  {
-    title: 'Messages',
-    description: 'Chat with other users to coordinate trades without leaving the app.',
-  },
-  {
-    title: 'Auctions (Pro)',
-    description: 'Run timed auctions, place bids, and use buy-now when you upgrade to Pro.',
-  },
-] as const
+import { FEATURES, PREVIEW_OFFERS } from '@/lib/marketing-copy'
 
 export default function HomePage() {
   return (

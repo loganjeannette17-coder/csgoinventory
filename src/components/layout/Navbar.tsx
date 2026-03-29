@@ -13,6 +13,7 @@ interface NavbarProps {
 }
 
 const NAV_LINKS = [
+  { href: '/home', label: 'Home' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/cs2-market', label: 'CS2 market' },
   { href: '/auctions', label: 'Marketplace' },
@@ -38,7 +39,7 @@ export function Navbar({ username, displayName, avatarUrl, unreadCount }: Navbar
   return (
     <header className="h-14 shrink-0 bg-gray-950 border-b border-gray-800 flex items-center px-4 sm:px-6 gap-4 z-30 relative">
       {/* Logo */}
-      <Link href="/dashboard" className="text-white font-bold text-base tracking-tight mr-2 shrink-0">
+      <Link href="/home" className="text-white font-bold text-base tracking-tight mr-2 shrink-0">
         CS2 Inventory
       </Link>
 

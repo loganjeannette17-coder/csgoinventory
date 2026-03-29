@@ -88,7 +88,12 @@ async function runMiddleware(
 
   // ── 2. Auth-page redirect: logged-in users should not see login/register ─
   if (user && (pathname === '/login' || pathname === '/register')) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL('/home', request.url))
+  }
+
+  // Logged-in users hitting the public marketing page go to the app home hub
+  if (user && pathname === '/') {
+    return NextResponse.redirect(new URL('/home', request.url))
   }
 
   // ── 3. Public routes are always accessible ────────────────────────────────

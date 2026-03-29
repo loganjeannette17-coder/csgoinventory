@@ -52,7 +52,7 @@ export default function UpgradePage() {
       if (!res.ok) {
         // Already on this plan (or better) — send them to the dashboard
         if (res.status === 409) {
-          router.push('/dashboard')
+          router.push('/home')
           return
         }
         throw new Error(data.error ?? `Request failed (${res.status}).`)

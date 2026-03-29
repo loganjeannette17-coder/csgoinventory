@@ -10,10 +10,10 @@ export default function NotFound() {
       </p>
       <div className="pt-2">
         <Link
-          href="/dashboard"
+          href="/home"
           className="bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-5 py-2 text-sm font-medium transition-colors inline-block"
         >
-          Back to dashboard
+          Back to home
         </Link>
       </div>
     </div>

@@ -16,7 +16,7 @@ export default async function EditProfilePage() {
     .eq('id', user.id)
     .single()
 
-  if (!profile) redirect('/dashboard')
+  if (!profile) redirect('/home')
 
   return (
     <div className="max-w-xl mx-auto px-4 py-8 space-y-6">

@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const error = searchParams.get('error')
   const errorDescription = searchParams.get('error_description')
   // `next` lets us send the user to a specific page post-login
-  const next = searchParams.get('next') ?? '/dashboard'
+  const next = searchParams.get('next') ?? '/home'
 
   if (error) {
     console.error('[auth/callback] OAuth error:', error, errorDescription)
@@ -36,6 +36,6 @@ export async function GET(request: Request) {
 
   // Successful auth — send to intended destination
   // Use a relative redirect to respect the current origin (avoids open-redirect)
-  const redirectUrl = next.startsWith('/') ? new URL(next, origin) : new URL('/dashboard', origin)
+  const redirectUrl = next.startsWith('/') ? new URL(next, origin) : new URL('/home', origin)
   return NextResponse.redirect(redirectUrl)
 }
