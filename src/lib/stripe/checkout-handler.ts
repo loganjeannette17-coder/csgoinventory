@@ -97,7 +97,7 @@ export async function handleStripeCheckoutPost(
       return NextResponse.json(
         {
           error:
-            'Basic plan is not configured. Create a $3.99/month recurring Price in Stripe and set STRIPE_BASIC_PRICE_ID in .env.local.',
+            'Basic plan is not configured. Create a $1.99/month recurring Price in Stripe and set STRIPE_BASIC_PRICE_ID in .env.local.',
         },
         { status: 500 },
       )

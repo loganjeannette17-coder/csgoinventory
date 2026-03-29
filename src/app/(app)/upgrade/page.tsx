@@ -105,7 +105,7 @@ export default function UpgradePage() {
             </div>
 
             <div className="mb-6">
-              <span className="text-4xl font-extrabold text-white">$3.99</span>
+              <span className="text-4xl font-extrabold text-white">$1.99</span>
               <span className="text-gray-500 text-sm ml-1">/ month</span>
             </div>
 
@@ -139,7 +139,7 @@ export default function UpgradePage() {
             </div>
 
             <div className="mb-6">
-              <span className="text-4xl font-extrabold text-white">$9.99</span>
+              <span className="text-4xl font-extrabold text-white">$4.99</span>
               <span className="text-gray-500 text-sm ml-1">/ month</span>
             </div>
 
