@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Reusable form input — used in EditProfileForm */
+  .input {
+    @apply w-full bg-gray-800 border border-gray-700 focus:border-blue-500 focus:ring-1
+           focus:ring-blue-500 rounded-lg px-3 py-2 text-white text-sm outline-none
+           transition-colors placeholder:text-gray-600;
+  }
+}
