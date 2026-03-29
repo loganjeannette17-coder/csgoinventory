@@ -13,9 +13,10 @@ interface NavbarProps {
 }
 
 const NAV_LINKS = [
-  { href: '/dashboard',  label: 'Dashboard' },
-  { href: '/auctions',   label: 'Marketplace' },
-  { href: '/browse',     label: 'Browse' },
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/cs2-market', label: 'CS2 market' },
+  { href: '/auctions', label: 'Marketplace' },
+  { href: '/browse', label: 'Browse' },
   { href: '/leaderboard', label: 'Leaderboard' },
 ]
 

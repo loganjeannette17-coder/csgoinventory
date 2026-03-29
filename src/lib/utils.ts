@@ -34,3 +34,10 @@ export function formatAbsoluteDate(date: string | Date): string {
     minute: '2-digit',
   }).format(d)
 }
+
+/** Short date for chart x-axis ticks (e.g. "Mar 29"). */
+export function formatChartAxisDate(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(d)
+}

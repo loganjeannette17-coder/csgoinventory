@@ -7,6 +7,20 @@ import { ValueSummary } from './ValueSummary'
 import { InventoryGrid } from './InventoryGrid'
 import { ItemCardSkeleton, ValueSummarySkeleton } from '@/components/ui/Skeleton'
 import Link from 'next/link'
+import { ValueOverTimeChart } from '@/components/charts/ValueOverTimeChart'
+import {
+  buildFourChartLabels,
+  downsampleSnapshotSeries,
+  type SnapshotPoint,
+} from './chart-helpers'
+
+function chartSpanLabel(dates: string[]): string {
+  if (dates.length < 2) return 'sync history'
+  const a = new Date(dates[0]).getTime()
+  const b = new Date(dates[dates.length - 1]).getTime()
+  const days = Math.max(1, Math.round((b - a) / (86400 * 1000)))
+  return `~${days} day span`
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -19,7 +33,7 @@ export default async function DashboardPage() {
   const [
     { data: steamAccount },
     { data: items },
-    { data: snapshots },
+    { data: snapshotRows },
   ] = await Promise.all([
     supabase
       .from('steam_accounts')
@@ -42,10 +56,14 @@ export default async function DashboardPage() {
       .select('total_value_usd, item_count, captured_at')
       .eq('user_id', user!.id)
       .order('captured_at', { ascending: false })
-      .limit(2),
+      .limit(400),
   ])
 
-  const [currentSnapshot, previousSnapshot] = snapshots ?? []
+  const snapshotsDesc = snapshotRows ?? []
+  const [currentSnapshot, previousSnapshot] = snapshotsDesc
+  const historyAsc: SnapshotPoint[] = [...snapshotsDesc].reverse()
+  const { values: chartValues, dates: chartDates } = downsampleSnapshotSeries(historyAsc, 90)
+  const chartXLabels = buildFourChartLabels(chartDates)
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 space-y-6">
@@ -111,6 +129,21 @@ export default async function DashboardPage() {
           previous={previousSnapshot ?? null}
         />
       </Suspense>
+
+      <ValueOverTimeChart
+        chartId="dashboard-personal"
+        eyebrow="Your inventory"
+        title="Total value over time"
+        values={chartValues}
+        xLabels={[...chartXLabels]}
+        periodLabel={chartSpanLabel(chartDates)}
+        emptyMessage="No snapshots yet. Link Steam and sync your inventory a few times to see value over time."
+        footer={
+          chartValues.length >= 2
+            ? 'Based on stored snapshots from each sync. More syncs produce a smoother curve.'
+            : undefined
+        }
+      />
 
       {/* Inventory grid */}
       <Suspense
