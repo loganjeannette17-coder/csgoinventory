@@ -47,19 +47,23 @@ function readStripeSecretKey(): string {
   return finalKey
 }
 
-// Single Stripe instance — used only on the server.
-const STRIPE_SECRET_KEY_FOR_SDK = readStripeSecretKey()
-console.log(
-  `[stripe] Using secret key ${STRIPE_SECRET_KEY_FOR_SDK.startsWith('sk_live_') ? 'live' : 'test'} (prefix ${STRIPE_SECRET_KEY_FOR_SDK.slice(
-    0,
-    10,
-  )}, len ${STRIPE_SECRET_KEY_FOR_SDK.length})`,
-)
+// Lazy singleton so `next build` can succeed when env vars are not loaded yet
+// (e.g. Vercel preview without secrets). Runtime API routes still require STRIPE_SECRET_KEY.
+let stripeSingleton: Stripe | null = null
 
-export const stripe = new Stripe(STRIPE_SECRET_KEY_FOR_SDK, {
-  apiVersion: '2025-02-24.acacia',
-  typescript: true,
-})
+export function getStripe(): Stripe {
+  if (!stripeSingleton) {
+    const secret = readStripeSecretKey()
+    console.log(
+      `[stripe] Using secret key ${secret.startsWith('sk_live_') ? 'live' : 'test'} (prefix ${secret.slice(0, 10)}, len ${secret.length})`,
+    )
+    stripeSingleton = new Stripe(secret, {
+      apiVersion: '2025-02-24.acacia',
+      typescript: true,
+    })
+  }
+  return stripeSingleton
+}
 
 // Retrieve or create a Stripe customer for a given user.
 // Idempotent: if the user already has a customer ID, returns it.
@@ -68,7 +72,7 @@ export async function getOrCreateStripeCustomer(
   email: string,
 ): Promise<string> {
   // Search for an existing customer by metadata to avoid duplicates
-  const existing = await stripe.customers.search({
+  const existing = await getStripe().customers.search({
     query: `metadata['supabase_user_id']:'${userId}'`,
     limit: 1,
   })
@@ -77,7 +81,7 @@ export async function getOrCreateStripeCustomer(
     return existing.data[0].id
   }
 
-  const customer = await stripe.customers.create({
+  const customer = await getStripe().customers.create({
     email,
     metadata: { supabase_user_id: userId },
   })
@@ -98,7 +102,7 @@ export function constructWebhookEvent(
   if (!webhookSecret) {
     throw new Error('STRIPE_WEBHOOK_SECRET is not set')
   }
-  return stripe.webhooks.constructEvent(
+  return getStripe().webhooks.constructEvent(
     rawBody,
     signature,
     webhookSecret,

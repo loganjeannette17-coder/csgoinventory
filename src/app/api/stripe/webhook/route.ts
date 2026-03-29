@@ -1,4 +1,4 @@
-import { constructWebhookEvent, stripe } from '@/lib/stripe'
+import { constructWebhookEvent, getStripe } from '@/lib/stripe'
 import { createServiceClient } from '@/lib/supabase/server'
 import { applyCheckoutSessionFulfillment } from '@/lib/stripe-checkout-fulfillment'
 import { getPlanFromPriceId } from '@/lib/plan'
@@ -118,7 +118,7 @@ async function getUserIdFromSubscription(subscription: Stripe.Subscription): Pro
   if (fromSub) return fromSub
 
   // Fallback: retrieve the Stripe customer and read its metadata
-  const customer = await stripe.customers.retrieve(subscription.customer as string)
+  const customer = await getStripe().customers.retrieve(subscription.customer as string)
   if (customer.deleted) return null
   return (customer as Stripe.Customer).metadata?.supabase_user_id ?? null
 }
@@ -272,7 +272,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   if (!invoice.subscription) return
 
   const customerId = invoice.customer as string
-  const customer = await stripe.customers.retrieve(customerId)
+  const customer = await getStripe().customers.retrieve(customerId)
   if (customer.deleted) return
 
   const userId = (customer as Stripe.Customer).metadata?.supabase_user_id

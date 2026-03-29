@@ -1,4 +1,4 @@
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { SubscriptionStatus } from '@/types/database'
 import { NextResponse } from 'next/server'
@@ -53,7 +53,7 @@ export async function POST() {
       )
     }
 
-    const updated = await stripe.subscriptions.update(sub.stripe_subscription_id, {
+    const updated = await getStripe().subscriptions.update(sub.stripe_subscription_id, {
       cancel_at_period_end: true,
     })
 

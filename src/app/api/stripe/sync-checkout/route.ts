@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import { applyCheckoutSessionFulfillment } from '@/lib/stripe-checkout-fulfillment'
 import { NextResponse } from 'next/server'
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'session_id required' }, { status: 400 })
   }
 
-  const session = await stripe.checkout.sessions.retrieve(sessionId, {
+  const session = await getStripe().checkout.sessions.retrieve(sessionId, {
     expand: ['subscription'],
   })
 

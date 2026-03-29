@@ -1,5 +1,5 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { getOrCreateStripeCustomer, stripe } from '@/lib/stripe'
+import { getOrCreateStripeCustomer, getStripe } from '@/lib/stripe'
 import { getPlanFromPriceId, getUserPlanInfo } from '@/lib/plan'
 import type { Plan } from '@/lib/plan'
 import { NextResponse } from 'next/server'
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
     }
 
     // ── 6. Create the Stripe Checkout Session ────────────────────────────────
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       mode: isSubscription ? 'subscription' : 'payment',
       line_items: [{ price: resolvedPriceId, quantity: 1 }],
