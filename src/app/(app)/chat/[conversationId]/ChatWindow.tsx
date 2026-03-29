@@ -2,7 +2,7 @@
 
 import { useRealtimeMessages, type Message } from '@/hooks/useRealtimeMessages'
 import { useIsOnline } from '@/hooks/usePresence'
-import { cn, formatAbsoluteDate } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { useEffect, useRef, useState } from 'react'
 
 interface OtherUser {

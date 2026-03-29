@@ -1,6 +1,7 @@
 'use client'
 
 import { cn, formatUsd } from '@/lib/utils'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -253,9 +254,9 @@ export default function CreateAuctionForm({ eligibleItems }: Props) {
           {loading && <Spinner />}
           Start auction
         </button>
-        <a href="/auctions" className="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+        <Link href="/auctions" className="text-gray-500 hover:text-gray-300 text-sm transition-colors">
           Cancel
-        </a>
+        </Link>
       </div>
     </form>
   )
