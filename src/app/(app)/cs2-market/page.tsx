@@ -29,8 +29,8 @@ export default function Cs2MarketPage() {
       />
 
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 px-4 py-3 text-xs text-gray-500 leading-relaxed max-w-2xl">
-        For your own collection, use the dashboard — the second chart shows your saved inventory
-        snapshots from each sync (only from when you started using this app).
+        For your own collection, use the dashboard — the value-over-time chart plots your saved
+        snapshots on a timeline from your Steam account age (see the chart footer on that page).
       </div>
     </div>
   )

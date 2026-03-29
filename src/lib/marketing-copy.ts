@@ -70,7 +70,8 @@ export const APP_HOME_DESTINATIONS = [
     href: '/cs2-market' as const,
     badge: 'Market',
     title: 'CS2 market overview',
-    description: 'Estimated long-run CS2 market size trend—same chart style as on your dashboard.',
+    description:
+      'Estimated long-run CS2 market size trend—illustrative macro index with the same chart style as the CS2 market page.',
   },
   {
     href: '/browse' as const,

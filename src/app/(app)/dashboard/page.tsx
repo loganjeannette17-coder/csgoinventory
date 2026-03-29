@@ -8,15 +8,8 @@ import { InventoryGrid } from './InventoryGrid'
 import { ItemCardSkeleton, ValueSummarySkeleton } from '@/components/ui/Skeleton'
 import Link from 'next/link'
 import { ValueOverTimeChart } from '@/components/charts/ValueOverTimeChart'
-import {
-  CS2_MARKET_ALLTIME_ESTIMATE_USD_BILLIONS,
-  CS2_MARKET_ALLTIME_X_LABELS,
-} from '@/lib/cs2-market-estimate'
-import {
-  buildFourChartLabels,
-  downsampleSnapshotSeries,
-  type SnapshotPoint,
-} from './chart-helpers'
+import { fetchSteamAccountCreatedIso } from '@/lib/steam/account-created'
+import { downsampleSnapshotSeries, type SnapshotPoint } from './chart-helpers'
 
 function chartSpanLabel(dates: string[]): string {
   if (dates.length < 2) return 'sync history'
@@ -26,6 +19,15 @@ function chartSpanLabel(dates: string[]): string {
   return `~${days} day span`
 }
 
+function personalPeriodLabel(steamCreatedIso: string | null, datesIso: string[]): string {
+  if (steamCreatedIso) {
+    const y = new Date(steamCreatedIso).getFullYear()
+    return `Steam account since ${y} · values from app syncs`
+  }
+  if (datesIso.length >= 2) return chartSpanLabel(datesIso)
+  return 'sync history'
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient()
 
@@ -33,7 +35,6 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // All queries fired in parallel
   const [
     { data: steamAccount },
     { data: items },
@@ -63,11 +64,15 @@ export default async function DashboardPage() {
       .limit(400),
   ])
 
+  const steamCreatedIso =
+    steamAccount?.steam_id != null
+      ? await fetchSteamAccountCreatedIso(steamAccount.steam_id)
+      : null
+
   const snapshotsDesc = snapshotRows ?? []
   const [currentSnapshot, previousSnapshot] = snapshotsDesc
   const historyAsc: SnapshotPoint[] = [...snapshotsDesc].reverse()
   const { values: chartValues, dates: chartDates } = downsampleSnapshotSeries(historyAsc, 90)
-  const chartXLabels = buildFourChartLabels(chartDates)
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8 space-y-6">
@@ -135,27 +140,19 @@ export default async function DashboardPage() {
       </Suspense>
 
       <ValueOverTimeChart
-        chartId="dashboard-cs2-alltime"
-        eyebrow="CS2 skins market (estimated)"
-        title="All-time market size trend (USD billions)"
-        values={[...CS2_MARKET_ALLTIME_ESTIMATE_USD_BILLIONS]}
-        valueFormat="billions"
-        xLabels={[...CS2_MARKET_ALLTIME_X_LABELS]}
-        periodLabel="~8 years (monthly, illustrative)"
-        footer="Industry-wide estimate for context only. Steam does not publish a single official “total CS2 market cap.” Not financial advice."
-      />
-
-      <ValueOverTimeChart
         chartId="dashboard-personal"
         eyebrow="Your inventory"
-        title="Your total value over time (this app)"
-        values={chartValues}
-        xLabels={[...chartXLabels]}
-        periodLabel={chartSpanLabel(chartDates)}
+        title="Total value over time (sync snapshots)"
+        timeSeries={{
+          steamAccountCreatedIso: steamCreatedIso,
+          datesIso: chartDates,
+          values: chartValues,
+        }}
+        periodLabel={personalPeriodLabel(steamCreatedIso, chartDates)}
         emptyMessage="No snapshots yet. Link Steam and sync your inventory a few times to see value over time."
         footer={
-          chartValues.length >= 2
-            ? 'Shows only snapshots saved here after you sync. Steam does not expose your past inventory value before you used this app, so earlier years cannot be backfilled.'
+          chartValues.length >= 1
+            ? 'The x-axis spans from your Steam account creation (from Steam’s API) through today. Dollar values only exist when this app saves a snapshot—Steam does not expose historical inventory worth before that.'
             : undefined
         }
       />

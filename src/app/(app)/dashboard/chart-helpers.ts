@@ -1,5 +1,7 @@
 import { formatChartAxisDate } from '@/lib/utils'
 
+export type { TimePoint } from '@/lib/chart-time'
+
 export type SnapshotPoint = {
   total_value_usd: number
   captured_at: string
@@ -39,3 +41,4 @@ export function buildFourChartLabels(dates: string[]): [string, string, string, 
     string,
   ]
 }
+
