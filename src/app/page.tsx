@@ -1,4 +1,37 @@
 import Link from 'next/link'
+import { PreviewValueChart } from '@/components/landing/PreviewValueChart'
+
+const PREVIEW_OFFERS = [
+  {
+    title: 'Live market pricing',
+    description:
+      'See total inventory value in USD with updates as market prices move—like a stock portfolio for your skins.',
+  },
+  {
+    title: 'Value history',
+    description:
+      'Spot trends over days and weeks so you know when your collection is up or down before you list or trade.',
+  },
+  {
+    title: 'Steam inventory sync',
+    description:
+      'Connect Steam once; we pull CS2 items and keep counts and prices aligned with your inventory.',
+  },
+  {
+    title: 'Marketplace & profile',
+    description:
+      'List items at fixed prices, browse public inventories, and share a trader profile with the community.',
+  },
+  {
+    title: 'Messages',
+    description: 'DM other users to negotiate and coordinate trades without leaving the app.',
+  },
+  {
+    title: 'Auctions (Pro)',
+    description:
+      'Timed auctions, bids, and buy-now—when you upgrade to Pro for more advanced selling.',
+  },
+] as const
 
 const FEATURES = [
   {
@@ -72,6 +105,48 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Portfolio-style preview + what the app offers (no account required to view) */}
+        <section className="border-t border-gray-800 bg-gradient-to-b from-gray-900/30 to-gray-950">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+            <div className="text-center sm:text-left mb-10 max-w-2xl">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                Preview: your collection as a portfolio
+              </h2>
+              <p className="text-gray-500 text-sm sm:text-base mt-3 leading-relaxed">
+                See how CS2 Inventory tracks your market value over time—then explore listings, chat, and
+                (Pro) auctions after you sign up and connect Steam.
+              </p>
+            </div>
+
+            <div className="grid gap-10 lg:grid-cols-2 lg:gap-12 items-start">
+              <div className="space-y-3">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  What you get
+                </p>
+                <ul className="space-y-4">
+                  {PREVIEW_OFFERS.map(({ title, description }) => (
+                    <li key={title} className="flex gap-3">
+                      <span
+                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500/90"
+                        aria-hidden
+                      />
+                      <div>
+                        <p className="text-sm font-semibold text-white">{title}</p>
+                        <p className="text-sm text-gray-500 mt-0.5 leading-relaxed">{description}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-gray-600 pt-2 border-t border-gray-800/80">
+                  This page is a preview — create an account to connect Steam and load your real inventory.
+                </p>
+              </div>
+
+              <PreviewValueChart className="shadow-lg shadow-black/30" />
+            </div>
+          </div>
+        </section>
+
         <section className="border-t border-gray-800 bg-gray-900/40">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
             <h2 className="text-2xl font-bold text-white text-center sm:text-left">
@@ -98,16 +173,18 @@ export default function HomePage() {
         <section className="border-t border-gray-800">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
             <div className="text-center sm:text-left mb-10">
-              <h2 className="text-2xl font-bold text-white">A look inside</h2>
+              <h2 className="text-2xl font-bold text-white">A look inside the app</h2>
               <p className="text-gray-500 text-sm mt-2 max-w-xl">
-                A preview of what you get once you connect your Steam account.
+                Static mockups of dashboard-style screens after you connect Steam — not real data.
               </p>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
               {/* Inventory value card */}
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 select-none pointer-events-none">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Inventory value</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+                  Dashboard · inventory value
+                </p>
                 <p className="text-3xl font-bold text-white">$12,847.23</p>
                 <p className="text-sm text-gray-500 mt-1">47 items synced · updated just now</p>
                 <div className="mt-4 grid grid-cols-3 gap-2">
