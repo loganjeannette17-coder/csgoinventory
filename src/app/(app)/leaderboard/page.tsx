@@ -4,6 +4,47 @@ import Link from 'next/link'
 
 const LEADERBOARD_LIMIT = 150
 
+const RANK_STYLES: Record<number, { badge: string; card: string; label: string }> = {
+  1: { badge: 'text-yellow-400', card: 'border-yellow-500/40 bg-yellow-500/5', label: '1st place' },
+  2: { badge: 'text-gray-300', card: 'border-gray-400/30 bg-gray-400/5', label: '2nd place' },
+  3: { badge: 'text-amber-600', card: 'border-amber-700/40 bg-amber-700/5', label: '3rd place' },
+}
+
+function CrownIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M2 18h20v2H2v-2zm1.5-2L5 6l4.5 4.5L12 3l2.5 7.5L19 6l1.5 10H3.5z" />
+    </svg>
+  )
+}
+
+function RankBadge({ rank }: { rank: number }) {
+  const style = RANK_STYLES[rank]
+  if (style) {
+    return (
+      <span
+        className={`flex flex-col items-center gap-0.5 ${style.badge}`}
+        aria-label={style.label}
+        title={style.label}
+      >
+        <CrownIcon className="h-5 w-5" />
+        <span className="text-xs font-bold leading-none">#{rank}</span>
+      </span>
+    )
+  }
+  return (
+    <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-gray-800 text-sm font-semibold text-gray-200 px-2">
+      #{rank}
+    </span>
+  )
+}
+
 type PublicProfile = {
   id: string
   username: string
@@ -110,12 +151,14 @@ export default async function LeaderboardPage() {
           <Link
             key={entry.username}
             href={`/profile/${entry.username}`}
-            className="group flex items-center gap-4 bg-gray-900 border border-gray-800 hover:border-gray-600 rounded-xl p-4 transition-colors"
+            className={`group flex items-center gap-4 border rounded-xl p-4 transition-colors hover:border-gray-600 ${
+              RANK_STYLES[entry.rank]
+                ? `${RANK_STYLES[entry.rank].card}`
+                : 'bg-gray-900 border-gray-800'
+            }`}
           >
             <div className="w-10 shrink-0 text-center">
-              <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-gray-800 text-sm font-semibold text-gray-200 px-2">
-                #{entry.rank}
-              </span>
+              <RankBadge rank={entry.rank} />
             </div>
 
             <div className="shrink-0">

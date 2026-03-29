@@ -94,6 +94,105 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ── Preview strip ─────────────────────────────────────────── */}
+        <section className="border-t border-gray-800">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+            <div className="text-center sm:text-left mb-10">
+              <h2 className="text-2xl font-bold text-white">A look inside</h2>
+              <p className="text-gray-500 text-sm mt-2 max-w-xl">
+                A preview of what you get once you connect your Steam account.
+              </p>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              {/* Inventory value card */}
+              <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 select-none pointer-events-none">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Inventory value</p>
+                <p className="text-3xl font-bold text-white">$12,847.23</p>
+                <p className="text-sm text-gray-500 mt-1">47 items synced · updated just now</p>
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  {[
+                    { label: 'Knives', value: '$5,240' },
+                    { label: 'Rifles', value: '$4,100' },
+                    { label: 'Pistols', value: '$3,507' },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="bg-gray-800 rounded-lg p-2.5 text-center">
+                      <p className="text-xs text-gray-500">{label}</p>
+                      <p className="text-sm font-semibold text-green-400 mt-0.5">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Marketplace / listings card */}
+              <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 select-none pointer-events-none">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Marketplace</p>
+                <ul className="space-y-2">
+                  {[
+                    { name: 'AK-47 | Redline (FT)', price: '$18.50', badge: 'Listed' },
+                    { name: 'AWP | Asiimov (BS)', price: '$42.00', badge: 'Listed' },
+                    { name: 'Karambit | Fade (FN)', price: '$980.00', badge: 'Listed' },
+                  ].map(({ name, price, badge }) => (
+                    <li key={name} className="flex items-center justify-between gap-3 bg-gray-800 rounded-lg px-3 py-2.5">
+                      <div className="min-w-0">
+                        <p className="text-sm text-white font-medium truncate">{name}</p>
+                        <span className="text-xs text-blue-400">{badge}</span>
+                      </div>
+                      <span className="text-sm font-semibold text-green-400 shrink-0">{price}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Messages card */}
+              <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 select-none pointer-events-none">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Messages</p>
+                <ul className="space-y-2">
+                  {[
+                    { from: 'trader99', msg: 'Hey, is the Karambit still available?', time: '2m ago' },
+                    { from: 'sk1nfan', msg: 'Would you do $900 for the fade?', time: '18m ago' },
+                    { from: 'cs2dealer', msg: 'Deal! I can trade tomorrow morning.', time: '1h ago' },
+                  ].map(({ from, msg, time }) => (
+                    <li key={from} className="flex items-start gap-3 bg-gray-800 rounded-lg px-3 py-2.5">
+                      <div className="h-7 w-7 rounded-full bg-blue-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                        {from[0].toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-gray-400 truncate"><span className="text-white font-medium">@{from}</span> · {time}</p>
+                        <p className="text-sm text-gray-300 truncate">{msg}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Auctions card (Pro) */}
+              <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 select-none pointer-events-none relative overflow-hidden">
+                <div className="absolute top-3 right-3 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+                  Pro
+                </div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Live auctions</p>
+                <ul className="space-y-2">
+                  {[
+                    { name: 'M9 Bayonet | Tiger Tooth (FN)', current: '$640', bids: 7, ends: '4h 22m' },
+                    { name: 'Glock-18 | Fade (FN)', current: '$185', bids: 3, ends: '11h 05m' },
+                  ].map(({ name, current, bids, ends }) => (
+                    <li key={name} className="bg-gray-800 rounded-lg px-3 py-3">
+                      <p className="text-sm text-white font-medium truncate">{name}</p>
+                      <div className="flex items-center gap-4 mt-1.5 text-xs text-gray-400">
+                        <span>Current bid <span className="text-green-400 font-semibold">{current}</span></span>
+                        <span>{bids} bids</span>
+                        <span className="ml-auto text-orange-400 font-medium">⏱ {ends}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-gray-600 mt-3 text-center">Upgrade to Pro to create &amp; bid on auctions</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center">
           <h2 className="text-xl font-semibold text-white">Ready to connect Steam?</h2>
           <p className="text-gray-500 text-sm mt-2 max-w-md mx-auto">
