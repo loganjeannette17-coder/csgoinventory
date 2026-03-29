@@ -3,6 +3,9 @@ import { getStripe } from '@/lib/stripe'
 import { applyCheckoutSessionFulfillment } from '@/lib/stripe-checkout-fulfillment'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 /**
  * Called from the browser right after Stripe redirects to success_url.
  * Ensures premium is activated even if the webhook is delayed or not running locally.

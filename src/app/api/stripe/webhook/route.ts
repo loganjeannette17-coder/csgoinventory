@@ -6,6 +6,9 @@ import type { SubscriptionStatus } from '@/types/database'
 import { NextResponse } from 'next/server'
 import type Stripe from 'stripe'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 // IMPORTANT: This route handler must receive the raw request body.
 // Next.js parses JSON by default — we must read the raw stream here.
 export async function POST(request: Request) {

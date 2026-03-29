@@ -1,4 +1,4 @@
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 
 /**
  * Stripe secret keys are long random strings (sk_test_… or sk_live_…).
@@ -47,17 +47,25 @@ function readStripeSecretKey(): string {
   return finalKey
 }
 
-// Lazy singleton so `next build` can succeed when env vars are not loaded yet
-// (e.g. Vercel preview without secrets). Runtime API routes still require STRIPE_SECRET_KEY.
+// Load stripe-node only on first use. A top-level `import Stripe from 'stripe'` runs SDK init
+// when the module graph loads and can break `next build` ("Failed to collect page data" for
+// /api/stripe/*) because Next evaluates route modules during static analysis.
 let stripeSingleton: Stripe | null = null
+
+function loadStripeConstructor(): typeof import('stripe').default {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- intentional lazy load for build
+  const mod = require('stripe') as { default: typeof import('stripe').default }
+  return mod.default
+}
 
 export function getStripe(): Stripe {
   if (!stripeSingleton) {
+    const StripeSdk = loadStripeConstructor()
     const secret = readStripeSecretKey()
     console.log(
       `[stripe] Using secret key ${secret.startsWith('sk_live_') ? 'live' : 'test'} (prefix ${secret.slice(0, 10)}, len ${secret.length})`,
     )
-    stripeSingleton = new Stripe(secret, {
+    stripeSingleton = new StripeSdk(secret, {
       apiVersion: '2025-02-24.acacia',
       typescript: true,
     })

@@ -3,6 +3,9 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { SubscriptionStatus } from '@/types/database'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 function stripeStatusToDb(status: string): SubscriptionStatus {
   switch (status) {
     case 'active':

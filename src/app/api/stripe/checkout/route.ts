@@ -4,6 +4,9 @@ import { getPlanFromPriceId, getUserPlanInfo } from '@/lib/plan'
 import type { Plan } from '@/lib/plan'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function POST(request: Request) {
   try {
     // ── 1. Authenticate the caller ───────────────────────────────────────────
