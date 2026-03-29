@@ -9,6 +9,10 @@ import { ItemCardSkeleton, ValueSummarySkeleton } from '@/components/ui/Skeleton
 import Link from 'next/link'
 import { ValueOverTimeChart } from '@/components/charts/ValueOverTimeChart'
 import {
+  CS2_MARKET_ALLTIME_ESTIMATE_USD_BILLIONS,
+  CS2_MARKET_ALLTIME_X_LABELS,
+} from '@/lib/cs2-market-estimate'
+import {
   buildFourChartLabels,
   downsampleSnapshotSeries,
   type SnapshotPoint,
@@ -131,16 +135,27 @@ export default async function DashboardPage() {
       </Suspense>
 
       <ValueOverTimeChart
+        chartId="dashboard-cs2-alltime"
+        eyebrow="CS2 skins market (estimated)"
+        title="All-time market size trend (USD billions)"
+        values={[...CS2_MARKET_ALLTIME_ESTIMATE_USD_BILLIONS]}
+        valueFormat="billions"
+        xLabels={[...CS2_MARKET_ALLTIME_X_LABELS]}
+        periodLabel="~8 years (monthly, illustrative)"
+        footer="Industry-wide estimate for context only. Steam does not publish a single official “total CS2 market cap.” Not financial advice."
+      />
+
+      <ValueOverTimeChart
         chartId="dashboard-personal"
         eyebrow="Your inventory"
-        title="Total value over time"
+        title="Your total value over time (this app)"
         values={chartValues}
         xLabels={[...chartXLabels]}
         periodLabel={chartSpanLabel(chartDates)}
         emptyMessage="No snapshots yet. Link Steam and sync your inventory a few times to see value over time."
         footer={
           chartValues.length >= 2
-            ? 'Based on stored snapshots from each sync. More syncs produce a smoother curve.'
+            ? 'Shows only snapshots saved here after you sync. Steam does not expose your past inventory value before you used this app, so earlier years cannot be backfilled.'
             : undefined
         }
       />
