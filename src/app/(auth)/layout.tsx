@@ -1,5 +1,8 @@
 // Shared layout for /login and /register.
 // Middleware handles auth redirect — no duplicate check needed here.
+// Avoid static prerender at build time: client pages call createClient() which needs Supabase env.
+export const dynamic = 'force-dynamic'
+
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
